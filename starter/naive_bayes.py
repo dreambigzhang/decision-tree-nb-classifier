@@ -84,7 +84,7 @@ def train_nb(train_X, train_y, num_classes, **kwargs):
 
     for c in range(num_classes):
         class_samples = train_X[train_y.flatten() == c]
-
+  
         # Calculate mean
         means[c] = np.mean(class_samples, axis=0)
 
@@ -95,7 +95,8 @@ def train_nb(train_X, train_y, num_classes, **kwargs):
         #covariances[c] = np.cov(class_samples, rowvar=False)
 
         # Calculate prior
-        priors[c] = len(class_samples) / N
+        priors[c] = (len(class_samples)+1) / (N+num_classes)
+    
 
     
     # mean is the average value of the feature for a particular class - take the element-wise average of X
