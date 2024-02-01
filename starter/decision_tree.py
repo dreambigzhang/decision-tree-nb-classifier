@@ -76,10 +76,13 @@ def entropy(samples, num_categories):
     # Set the entropy of the unnormalized categorical distribution counts
     # Make sure the case where p_i = 0 is handeled appropriately.
     ent = 0
+    
+    if len(samples) == 0:
+        return 0
     probabilities = counts / len(samples)
     for p_i in probabilities:
         if p_i != 0:
-            ent -= p_i * np.log2(p_i)
+            ent -= p_i * np.log(p_i)
     # ====================================================
 
     return ent
@@ -123,12 +126,16 @@ def optimal_split(X, y, H_data, split_dim, num_classes, debug=False):
     # ====================================================
     # TODO: Implement your solution within the box
     # Initialize variables
-
+    #print("unique values",unique_values)
     # Iterate over possible split values and find optimal split that maximizes the information gain.
-    for ii in range(unique_values.shape[0] - 1):
+    #print("First idxes", first_idxes)
+    for i in range(unique_values.shape[0]-1):
+        #print(i)
         # Split data by split value and compute information gain
-        current_split_index = first_idxes[ii]
-        current_split_value = unique_values[ii]
+        current_split_value = (unique_values[i]+unique_values[i+1])/2
+        current_split_index = first_idxes[i+1]
+        #print("left", y[:current_split_index])
+        #print("right", y[current_split_index:])
         H_left = entropy(y[:current_split_index], num_classes)
         H_right = entropy(y[current_split_index:], num_classes)
         current_information_gain = H_data - (current_split_index / N) * H_left - ((N - current_split_index) / N) * H_right        
@@ -143,13 +150,11 @@ def optimal_split(X, y, H_data, split_dim, num_classes, debug=False):
                 current_information_gain,
             ))
 
-        # Update maximum information gain when applicable
         if current_information_gain >= maximum_information_gain:
             maximum_information_gain = current_information_gain
             split_value = current_split_value
     
     # ====================================================
-
     return split_value, maximum_information_gain
 
 
