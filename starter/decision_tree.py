@@ -110,8 +110,6 @@ def optimal_split(X, y, H_data, split_dim, num_classes, debug=False):
     X = X[sort_idx]
     y = y[sort_idx]
 
-    # This returns the unique values and their first indicies.
-    # Since X is already sorted, we can split by looking at first_idxes.
     (unique_values, first_idxes) = np.unique(X[:, split_dim], return_index=True)
     current_split_index = None
     current_split_value = None
@@ -125,13 +123,10 @@ def optimal_split(X, y, H_data, split_dim, num_classes, debug=False):
 
     # ====================================================
     # TODO: Implement your solution within the box
-    # Initialize variables
     #print("unique values",unique_values)
-    # Iterate over possible split values and find optimal split that maximizes the information gain.
     #print("First idxes", first_idxes)
     for i in range(unique_values.shape[0]-1):
         #print(i)
-        # Split data by split value and compute information gain
         current_split_value = (unique_values[i]+unique_values[i+1])/2
         current_split_index = first_idxes[i+1]
         #print("left", y[:current_split_index])

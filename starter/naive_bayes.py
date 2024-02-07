@@ -84,26 +84,15 @@ def train_nb(train_X, train_y, num_classes, **kwargs):
 
     for c in range(num_classes):
         class_samples = train_X[train_y.flatten() == c]
-  
-        # Calculate mean
+        # mean is the average value of the feature for a particular class - take the element-wise average of X
         means[c] = np.mean(class_samples, axis=0)
-
+        
+        # covariance? initialized as num_classes number of DxD identify matrix, can capture the covariance between every pair of features for each class
         for i in range(D):
             covariances[c, i, i] = np.var(class_samples[:, i])
         
-        # Calculate covariance
-        #covariances[c] = np.cov(class_samples, rowvar=False)
-
-        # Calculate prior
         priors[c] = (len(class_samples)+1) / (N+num_classes)
     
-
-    
-    # mean is the average value of the feature for a particular class - take the element-wise average of X
-
-
-    # covariance? initialized as num_classes number of DxD identify matrix, can capture the covariance between every pair of features for each class
-
     # ====================================================
 
     params = Params(means, covariances, priors, D, num_classes)
@@ -128,16 +117,9 @@ def predict_nb(params, X):
     # ====================================================
     # TODO: Implement your solution within the box
     for c in range(params.C):
-        # Calculate log-likelihood for each class
-
-        # still need to be fixed
-        #log_likelihood = -0.5*np.log((2*np.pi)**D* np.linalg.det(params.covariances[c, :, :]))+ -0.5*(X-params.means[c, :])@np.linalg.inv(params.covariances[c, :, :])@(X-params.means[c, :])
         log_likelihood = -0.5 * np.sum(np.log((2 * np.pi)**D * np.linalg.det(params.covariances[c, :, :]))) - 0.5 * np.sum(((X - params.means[c, :]) @ np.linalg.inv(params.covariances[c, :, :])) * (X - params.means[c, :]), axis=1)
-        
-        # Calculate unnormalized probability (log prior + log likelihood)
         unnormalized_probs[:, c] = np.log(params.priors[c]) + log_likelihood
    
-    # Calculate normalized probabilities
     log_probs = unnormalized_probs - np.max(unnormalized_probs, axis=1, keepdims=True)  # for numerical stability
     probs = np.exp(log_probs)
     probs /= np.sum(probs, axis=1, keepdims=True)
